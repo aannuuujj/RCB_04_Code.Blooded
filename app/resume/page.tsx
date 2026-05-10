@@ -8,6 +8,7 @@ import StatCard from "@/components/StatCard";
 import LoadingDots from "@/components/LoadingDots";
 import { useSession } from "next-auth/react";
 import { saveResume } from "@/lib/actions/saveResume";
+import ErrorCard from "@/components/ErrorCard";
 
 // Types matching the expected API response
 type AnalysisResult = {
@@ -178,7 +179,7 @@ export default function ResumePage() {
             )}
           </div>
 
-          {error && <p className="text-red-500 font-semibold">{error}</p>}
+          {error && <ErrorCard message={error} />}
 
           {file && (
             <button 

@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ScoreRing from "@/components/ScoreRing";
 import SkillTag from "@/components/SkillTag";
 import SectionCard from "@/components/SectionCard";
 import LoadingDots from "@/components/LoadingDots";
 import { useSession } from "next-auth/react";
 import { saveInterview } from "@/lib/actions/saveInterview";
+import { useSpeechInput } from "@/hooks/useSpeechInput";
+import { Mic, MicOff } from "lucide-react";
+import ErrorCard from "@/components/ErrorCard";
 
 type FinalReport = {
   session_score: number;
@@ -37,6 +40,14 @@ export default function MockInterviewPage() {
   const [feedback, setFeedback] = useState<FeedbackData | null>(null);
   const [nextQuestion, setNextQuestion] = useState("");
   const [report, setReport] = useState<FinalReport | null>(null);
+
+  const { isListening, transcript, startListening, stopListening, supported } = useSpeechInput();
+
+  useEffect(() => {
+    if (transcript) {
+      setAnswer(transcript);
+    }
+  }, [transcript]);
 
   const startInterview = async () => {
     setIsLoading(true);
@@ -204,14 +215,24 @@ export default function MockInterviewPage() {
           
           <div className="flex gap-4 items-start mt-4">
             <div className="w-full flex flex-col gap-4">
-              <textarea
-                value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
-                placeholder="Type your response... (Speak clearly and structure your answer)"
-                className="w-full h-64 p-6 md:p-8 bg-brand-black border border-brand-gray/50 rounded-2xl rounded-tr-sm text-brand-white text-lg resize-none focus:border-brand-white outline-none transition-colors"
-              ></textarea>
+              <div className="relative">
+                <textarea
+                  value={answer}
+                  onChange={(e) => setAnswer(e.target.value)}
+                  placeholder="Type your response... (Speak clearly and structure your answer)"
+                  className="w-full h-64 p-6 md:p-8 bg-black border border-gray-800 rounded-2xl rounded-tr-sm text-white text-lg resize-none focus:border-white outline-none transition-colors pr-16"
+                ></textarea>
+                {supported && (
+                  <button 
+                    onClick={isListening ? stopListening : startListening}
+                    className={`absolute bottom-6 right-6 p-4 rounded-full flex items-center justify-center transition-all ${isListening ? 'bg-red-500 text-white animate-pulse shadow-[0_0_20px_rgba(239,68,68,0.5)]' : 'bg-[#222] text-white hover:bg-[#333] hover:scale-105'}`}
+                  >
+                    {isListening ? <MicOff size={24} /> : <Mic size={24} />}
+                  </button>
+                )}
+              </div>
 
-              {error && <p className="text-red-500 font-bold text-sm text-right">{error}</p>}
+              {error && <ErrorCard message={error} />}
 
               <button 
                 onClick={submitAnswer}
