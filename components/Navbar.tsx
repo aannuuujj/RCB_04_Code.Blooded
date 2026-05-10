@@ -12,7 +12,7 @@ export default function Navbar() {
         <Link href="/resume" className="text-brand-gray hover:text-brand-white transition-colors text-sm font-semibold uppercase tracking-wider">Resume</Link>
         <Link href="/interview" className="text-brand-gray hover:text-brand-white transition-colors text-sm font-semibold uppercase tracking-wider">Interview</Link>
         <Link href="/dashboard" className="text-brand-gray hover:text-brand-white transition-colors text-sm font-semibold uppercase tracking-wider">Dashboard</Link>
-        <Link href="/internships" className="text-brand-gray hover:text-brand-white transition-colors text-sm font-semibold uppercase tracking-wider flex items-center gap-1">
+        <Link href="/gravity" className="text-brand-gray hover:text-brand-white transition-colors text-sm font-semibold uppercase tracking-wider flex items-center gap-1">
             Gravity Score
         </Link>
       </nav>

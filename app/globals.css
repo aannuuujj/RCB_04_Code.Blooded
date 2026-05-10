@@ -14,3 +14,46 @@ body {
   font-family: var(--font-sans);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+/* Modern Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-brand-black);
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-gray);
+}
+
+/* Orbit Animations */
+@keyframes spin-orbit {
+  100% { transform: rotate(360deg); }
+}
+@keyframes reverse-spin-orbit {
+  100% { transform: rotate(-360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-orbit var(--orbit-duration, 20s) linear infinite;
+}
+.animate-reverse-spin {
+  animation: reverse-spin-orbit var(--orbit-duration, 20s) linear infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px 0px rgba(255, 255, 255, 0.2); }
+  50% { box-shadow: 0 0 40px 10px rgba(255, 255, 255, 0.4); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
