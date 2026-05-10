@@ -1,90 +1,88 @@
-import { getServerSession } from "next-auth";
-import { createClient } from "@supabase/supabase-js";
-import SectionCard from "@/components/SectionCard";
-import StatCard from "@/components/StatCard";
-import { ResumeLineChart, InterviewBarChart } from "@/components/DashboardCharts";
-import { GoalChecklist } from "@/components/GoalChecklist";
-import { redirect } from "next/navigation";
+export default function DashboardPage() {
+    return (
+        <div className="min-h-screen bg-black text-white px-6 py-12">
+            <div className="max-w-6xl mx-auto">
 
-export const dynamic = "force-dynamic";
+                <h1 className="text-5xl font-bold mb-4">
+                    AI Career Copilot
+                </h1>
 
-export default async function DashboardPage() {
-  const session = await getServerSession();
-  
-  if (!session?.user?.email) {
-    redirect("/login");
-  }
+                <p className="text-gray-400 mb-10 text-lg">
+                    Your personal AI-powered career growth dashboard.
+                </p>
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-  const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-  const { data: profile } = await supabaseAdmin
-    .from('profiles')
-    .select('id')
-    .eq('email', session.user.email)
-    .single();
+                    <div className="border border-gray-700 rounded-2xl p-6 bg-zinc-900">
+                        <h2 className="text-2xl font-semibold mb-3">
+                            Resume Analysis
+                        </h2>
 
-  if (!profile) {
-    return <div className="text-center pt-24">User profile not found. Please log in again.</div>;
-  }
+                        <p className="text-gray-400">
+                            Upload and analyze your resume with AI feedback.
+                        </p>
 
-  const userId = profile.id;
-
-  const [resumesRes, interviewsRes, goalsRes] = await Promise.all([
-    supabaseAdmin.from('resumes').select('*').eq('user_id', userId).order('created_at', { ascending: true }),
-    supabaseAdmin.from('interview_sessions').select('*').eq('user_id', userId).order('created_at', { ascending: true }),
-    supabaseAdmin.from('goals').select('*').eq('user_id', userId).order('created_at', { ascending: true })
-  ]);
-
-  const resumes = resumesRes.data || [];
-  const interviews = interviewsRes.data || [];
-  const goals = goalsRes.data || [];
-
-  const completedGoals = goals.filter(g => g.completed).length;
-
-  const avgInterviewScore = interviews.length > 0 
-    ? Math.round(interviews.reduce((acc, curr) => acc + curr.session_score, 0) / interviews.length)
-    : 0;
-
-  return (
-    <div className="flex-1 flex flex-col items-center py-12 px-4 w-full">
-        <div className="w-full max-w-7xl flex flex-col gap-10">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-brand-gray/30 pb-6 gap-4">
-                <div>
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3">Dashboard</h1>
-                    <p className="text-brand-gray text-lg">Welcome back, {session.user.name}.</p>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <StatCard title="Total Resumes Uploaded" value={resumes.length} subtext="Track your iterations" trend="up" />
-                <StatCard title="Avg Interview Score" value={avgInterviewScore} subtext="Across all mock interviews" trend="up" />
-                <StatCard title="Goals Completed" value={completedGoals} subtext="This week" trend="up" />
-            </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                <div className="lg:col-span-2 flex flex-col gap-8">
-                    <SectionCard title="Resume Score Trajectory">
-                        <div className="h-72 w-full bg-[#111] border border-brand-gray/30 rounded-xl mt-2 p-4">
-                            <ResumeLineChart data={resumes} />
+                        <div className="mt-6 text-5xl font-bold">
+                            82
                         </div>
-                    </SectionCard>
 
-                    <SectionCard title="Mock Interview Scores">
-                        <div className="h-72 w-full bg-[#111] border border-brand-gray/30 rounded-xl mt-2 p-4">
-                            <InterviewBarChart data={interviews} />
+                        <p className="text-green-400 mt-2">
+                            ATS Friendly
+                        </p>
+                    </div>
+
+                    <div className="border border-gray-700 rounded-2xl p-6 bg-zinc-900">
+                        <h2 className="text-2xl font-semibold mb-3">
+                            Interview Practice
+                        </h2>
+
+                        <p className="text-gray-400">
+                            Practice mock interviews powered by AI.
+                        </p>
+
+                        <div className="mt-6 text-5xl font-bold">
+                            7.8
                         </div>
-                    </SectionCard>
+
+                        <p className="text-blue-400 mt-2">
+                            Average Score
+                        </p>
+                    </div>
+
+                    <div className="border border-gray-700 rounded-2xl p-6 bg-zinc-900">
+                        <h2 className="text-2xl font-semibold mb-3">
+                            Gravity Score
+                        </h2>
+
+                        <p className="text-gray-400">
+                            Measure how strongly opportunities align with you.
+                        </p>
+
+                        <div className="mt-6 text-5xl font-bold">
+                            91
+                        </div>
+
+                        <p className="text-yellow-400 mt-2">
+                            In Orbit 🚀
+                        </p>
+                    </div>
+
                 </div>
 
-                <div className="lg:col-span-1 flex flex-col gap-8">
-                    <SectionCard title="Weekly Checklist">
-                        <GoalChecklist goals={goals} userId={userId} />
-                    </SectionCard>
+                <div className="mt-12 border border-gray-700 rounded-2xl p-8 bg-zinc-900">
+                    <h2 className="text-3xl font-bold mb-4">
+                        Weekly Goals
+                    </h2>
+
+                    <ul className="space-y-4 text-lg">
+                        <li>✅ Improve resume keywords</li>
+                        <li>✅ Complete 2 mock interviews</li>
+                        <li>⬜ Apply to 5 internships</li>
+                        <li>⬜ Learn system design basics</li>
+                    </ul>
                 </div>
+
             </div>
         </div>
-    </div>
-  );
+    );
 }
