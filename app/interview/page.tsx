@@ -5,6 +5,8 @@ import ScoreRing from "@/components/ScoreRing";
 import SkillTag from "@/components/SkillTag";
 import SectionCard from "@/components/SectionCard";
 import LoadingDots from "@/components/LoadingDots";
+import { useSession } from "next-auth/react";
+import { saveInterview } from "@/lib/actions/saveInterview";
 
 type FinalReport = {
   session_score: number;
@@ -19,6 +21,7 @@ type FeedbackData = {
 };
 
 export default function MockInterviewPage() {
+  const { data: session } = useSession();
   const [step, setStep] = useState<"setup" | "interview" | "feedback" | "report">("setup");
   
   const [role, setRole] = useState("Frontend");
@@ -84,6 +87,21 @@ export default function MockInterviewPage() {
       } else {
         setReport(data.final_report);
         setStep("feedback");
+        
+        if (session?.user?.email) {
+          const saveRes = await saveInterview(
+            session.user.email,
+            role,
+            companyType,
+            data.final_report.session_score,
+            data.final_report.weak_areas || [],
+            data.final_report.strong_areas || [],
+            data.final_report.top_tip || ""
+          );
+          if (!saveRes.success) {
+            console.error("Failed to save interview:", saveRes.error);
+          }
+        }
       }
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");

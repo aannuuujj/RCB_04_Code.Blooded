@@ -6,6 +6,8 @@ import ScoreRing from "@/components/ScoreRing";
 import SectionCard from "@/components/SectionCard";
 import StatCard from "@/components/StatCard";
 import LoadingDots from "@/components/LoadingDots";
+import { useSession } from "next-auth/react";
+import { saveResume } from "@/lib/actions/saveResume";
 
 // Types matching the expected API response
 type AnalysisResult = {
@@ -30,6 +32,7 @@ export default function ResumePage() {
   const [error, setError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const setResumeData = useCareerStore((state) => state.setResumeData);
+  const { data: session } = useSession();
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -105,6 +108,19 @@ export default function ResumePage() {
         analysisData.overall_score, 
         analysisData.extracted_skills || []
       );
+
+      // Save to Supabase
+      if (session?.user?.email) {
+        const formDataToSave = new FormData();
+        formDataToSave.append("email", session.user.email);
+        formDataToSave.append("scores", JSON.stringify(analysisData));
+        formDataToSave.append("file", file);
+        
+        const saveRes = await saveResume(formDataToSave);
+        if (!saveRes.success) {
+          console.error("Failed to save resume to Supabase:", saveRes.error);
+        }
+      }
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
     } finally {
